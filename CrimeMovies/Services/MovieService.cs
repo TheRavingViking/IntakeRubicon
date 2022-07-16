@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using CrimeMovies.Models;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -37,19 +38,19 @@ namespace CrimeMovies.Services
         {
 
             var results = movies.GroupBy(movie => movie.Year)
-                .Select(group =>  group.OrderByDescending(x => x.Rating));
-
-            WriteMoviesToConsole(results);
-                
-        }
-
-        public void WriteMoviesToConsole(IEnumerable<IOrderedEnumerable<Movie>> movies)
-        {
-            foreach (var group in movies)
-            {
-                foreach (var movie in group)
+                .Select(group => new
                 {
-                    Console.WriteLine(movie.Year + ":" + movie.Title + ":" + movie.Rating);
+                    Year = group.Key,
+                    Movies = group.OrderByDescending(movie => movie.Rating)
+                });
+
+            foreach (var group in results.OrderByDescending(x => x.Year))
+            {
+                Console.WriteLine(group.Year);
+                foreach (var movie in group.Movies.Take(10))
+                {
+
+                    Console.WriteLine(movie.Title + ":" + movie.Rating);
                 }
             }
         }
