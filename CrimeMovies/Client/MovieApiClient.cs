@@ -24,6 +24,7 @@ namespace CrimeMovies.Client
                   
         }
 
+        /// <inheritdoc/>
         public async Task<string> GetMoviesByGenre(string genre, int index)
         {
             return await retryPolicy.ExecuteAsync(async () =>

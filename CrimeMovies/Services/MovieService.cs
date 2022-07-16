@@ -1,4 +1,5 @@
-﻿using CrimeMovies.Models;
+﻿using CrimeMovies.Interfaces;
+using CrimeMovies.Models;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Xml.Linq;
@@ -13,6 +14,8 @@ namespace CrimeMovies.Services
         {
             _movieApiClient = movieApiClient;
         }
+
+        /// <inheritdoc/>
         public async Task<List<Movie>> GetMoviesByGenre(string genre, int amount)
         {
             var amountOfRecordsPerRequest = 100;
@@ -30,31 +33,27 @@ namespace CrimeMovies.Services
             {
                 TaskList.Add(_movieApiClient.GetMoviesByGenre(genre, i*amountOfRecordsPerRequest));
             }
+
+            // replace this with an different method to support Json
             return MapXmlResponsesToMovieList(await Task.WhenAll(TaskList));
         }
 
-
-        public void GroupAndSortMovies(List<Movie> movies)
+        /// <inheritdoc/>
+        public IEnumerable<(string year, IOrderedEnumerable<Movie> movies)> GroupAndOrderMovies(List<Movie> movies)
         {
-
-            var results = movies.GroupBy(movie => movie.Year)
-                .Select(group => new
-                {
-                    Year = group.Key,
-                    Movies = group.OrderByDescending(movie => movie.Rating)
-                });
-
-            foreach (var group in results.OrderByDescending(x => x.Year))
-            {
-                Console.WriteLine(group.Year);
-                foreach (var movie in group.Movies.Take(10))
-                {
-
-                    Console.WriteLine(movie.Title + ":" + movie.Rating);
-                }
-            }
+            return movies
+                .GroupBy(movie => movie.Year)
+                .Select(group => (
+                    Year: group.Key,
+                    Movies: group.OrderByDescending(movie => movie.Rating)
+                ));
         }
 
+        /// <summary>
+        /// Maps the returned XML string from the Api to a list Movies
+        /// </summary>
+        /// <param name="movieResponses"></param>
+        /// <returns>List of Movies</returns>
         private List<Movie> MapXmlResponsesToMovieList(string[] movieResponses)
         {
             var MovieList = new List<Movie>();
@@ -63,8 +62,8 @@ namespace CrimeMovies.Services
                 XDocument moviesResponse = XDocument.Parse(movieResponse);
                 XNamespace ns = "http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models";
                 List<Movie> movies = (
-                from mov in moviesResponse.Descendants(ns + "Movie")
-                select MapXmlMovieToMovie(mov, ns)).ToList();
+                from movie in moviesResponse.Descendants(ns + "Movie")
+                select MapXmlMovieToMovie(movie, ns)).ToList();
 
                 MovieList.AddRange(movies);
             }
@@ -72,6 +71,12 @@ namespace CrimeMovies.Services
             return MovieList;
         }
 
+        /// <summary>
+        /// Maps an XElement from XML to Linq query to Movie Object
+        /// </summary>
+        /// <param name="xmlMovie"></param>
+        /// <param name="xNamespace"></param>
+        /// <returns>movie</returns>
         private Movie MapXmlMovieToMovie(XElement xmlMovie, XNamespace xNamespace)
         {
             return new Movie
