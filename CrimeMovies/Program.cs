@@ -5,6 +5,8 @@ global using Microsoft.Extensions.DependencyInjection;
 global using System;
 global using System.Collections.Generic;
 global using System.Threading.Tasks;
+global using System.Linq;
+using System.Xml.Linq;
 
 var builder = new ServiceCollection();
 builder.AddHttpClient<IMovieApiClient, MovieApiClient>(client =>
@@ -19,10 +21,21 @@ builder.AddSingleton<IMovieService, MovieService>();
 
 var serviceProvider = builder.BuildServiceProvider();
 
-
 var movieService = serviceProvider.GetRequiredService<IMovieService>();
+var results = await movieService.GetMoviesByGenre("crime", 2500);
+movieService.GroupAndSortMovies(results);
 
-var movies = await movieService.GetMoviesByGenre("test");
+
+
+//var query = movies.GroupBy(x => x.Year);
+//foreach (var result in query)
+//{
+//    foreach (var item in result.OrderBy(x => x.Rating).Take(10))
+//    {
+//        Console.WriteLine(item.Year + ":" + item.Title + ":" + item.Rating);
+//    }
+//}
+
+
 // See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
 Console.ReadKey();

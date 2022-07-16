@@ -2,6 +2,6 @@
 {
     public interface IMovieApiClient
     {
-        Task<ArrayOfMovie> GetMoviesByGenre();
+        Task<string> GetMoviesByGenre(string genre, int index);
     }
 }

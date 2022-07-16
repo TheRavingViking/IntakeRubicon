@@ -13,21 +13,19 @@ namespace CrimeMovies.Client
             _httpClient = httpClient;
         }
 
-        public async Task<ArrayOfMovie> GetMoviesByGenre()
+        public async Task<string> GetMoviesByGenre(string genre, int index)
         {
 
-            var response = await _httpClient.GetAsync("api/movies/genres/crime?index=1000");
+            var response = await _httpClient.GetAsync($"api/movies/genres/{genre}?index={index}");
             var httpResponse = response.EnsureSuccessStatusCode();
 
-            var xml = await httpResponse.Content.ReadAsStringAsync();
-            XDocument moviesResponse = XDocument.Parse(xml);
-            XNamespace ns = "http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models";
+            //var xml = await httpResponse.Content.ReadAsStringAsync();
+            //XDocument moviesResponse = XDocument.Parse(xml);
+            //XNamespace ns = "http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models";
 
-            var xmlresponse = moviesResponse.Descendants(ns + "Movie").Where(item => (string)item.Element(ns + "imdbid") == "tt0086356");
+            //var xmlresponse = moviesResponse.Descendants(ns + "Movie").Where(item => (string)item.Element(ns + "imdbid") == "tt0086356");
 
-
-            return xmlresponse;
-            
+            return await httpResponse.Content.ReadAsStringAsync();
         }
     }
 }

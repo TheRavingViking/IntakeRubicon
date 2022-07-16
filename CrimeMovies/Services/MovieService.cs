@@ -1,4 +1,8 @@
-﻿namespace CrimeMovies.Services
+﻿using System.Collections.Concurrent;
+using System.Linq;
+using System.Xml.Linq;
+
+namespace CrimeMovies.Services
 {
     internal class MovieService : IMovieService
     {
@@ -8,9 +12,74 @@
         {
             _movieApiClient = movieApiClient;
         }
-        public async Task<ArrayOfMovie> GetMoviesByGenre(string genre)
+        public async Task<List<Movie>> GetMoviesByGenre(string genre, int amount)
         {
-            return await _movieApiClient.GetMoviesByGenre();
+            var amountOfRecordsPerRequest = 100;
+
+            if (amount < 100)
+            {
+                amount = 100;
+            }
+
+            var amountOfRequestNeeded = amount / amountOfRecordsPerRequest;
+
+            var TaskList = new List<Task<string>>();
+
+            for (int i = 0; i < amountOfRequestNeeded; i++)
+            {
+                TaskList.Add(_movieApiClient.GetMoviesByGenre(genre, i*amountOfRecordsPerRequest));
+            }
+            return MapResponsesToMovieList(await Task.WhenAll(TaskList));
+        }
+
+
+        public void GroupAndSortMovies(List<Movie> movies)
+        {
+
+            var results = movies.GroupBy(movie => movie.Year)
+                .Select(group =>  group.OrderByDescending(x => x.Rating));
+
+            WriteMoviesToConsole(results);
+                
+        }
+
+        public void WriteMoviesToConsole(IEnumerable<IOrderedEnumerable<Movie>> movies)
+        {
+            foreach (var group in movies)
+            {
+                foreach (var movie in group)
+                {
+                    Console.WriteLine(movie.Year + ":" + movie.Title + ":" + movie.Rating);
+                }
+            }
+        }
+
+        private List<Movie> MapResponsesToMovieList(string[] movieResponses)
+        {
+            var MovieList = new List<Movie>();
+            foreach (var movieResponse in movieResponses)
+            {
+                XDocument moviesResponse = XDocument.Parse(movieResponse);
+                XNamespace ns = "http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models";
+                List<Movie> movies = (
+                from mov in moviesResponse.Descendants(ns + "Movie")
+                select MapXmlMovieToMovie(mov, ns)).ToList();
+
+                MovieList.AddRange(movies);
+            }
+
+            return MovieList;
+        }
+
+        private Movie MapXmlMovieToMovie(XElement xmlMovie, XNamespace xNamespace)
+        {
+            return new Movie
+            {
+                Id = xmlMovie.Element(xNamespace + "imdbid").Value,
+                Title = xmlMovie.Element(xNamespace + "title").Value,
+                Year = xmlMovie.Element(xNamespace + "year").Value,
+                Rating = xmlMovie.Element(xNamespace + "rating").Value,
+            };
         }
     }
 }

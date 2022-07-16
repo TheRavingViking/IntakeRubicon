@@ -8,6 +8,8 @@ namespace CrimeMovies.Services
 {
     public interface IMovieService
     {
-        Task<ArrayOfMovie> GetMoviesByGenre(string genre);
+        Task<List<Movie>> GetMoviesByGenre(string genre, int amount);
+        void GroupAndSortMovies(List<Movie> movies);
+        //List<Movie> MapResponsesToMovieList(string[] movieResponses);
     }
 }
