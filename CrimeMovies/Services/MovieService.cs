@@ -30,7 +30,7 @@ namespace CrimeMovies.Services
             {
                 TaskList.Add(_movieApiClient.GetMoviesByGenre(genre, i*amountOfRecordsPerRequest));
             }
-            return MapResponsesToMovieList(await Task.WhenAll(TaskList));
+            return MapXmlResponsesToMovieList(await Task.WhenAll(TaskList));
         }
 
 
@@ -55,7 +55,7 @@ namespace CrimeMovies.Services
             }
         }
 
-        private List<Movie> MapResponsesToMovieList(string[] movieResponses)
+        private List<Movie> MapXmlResponsesToMovieList(string[] movieResponses)
         {
             var MovieList = new List<Movie>();
             foreach (var movieResponse in movieResponses)
