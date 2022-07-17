@@ -122,7 +122,7 @@ public class MovieServiceTests
         return @"<ArrayOfMovie xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models""><Movie><budget>60000000</budget><country>[United States of America]</country><genres>[Action, Crime, Drama, Thriller]</genres><homepage></homepage><imdbid>tt0113277</imdbid><imdburl>https://www.imdb.com/title/tt0113277/</imdburl><language>EN</language><originaltitle>HEAT</originaltitle><overview>Obsessive master thief- Neil McCauley leads a top-notch crew on various insane heists throughout Los Angeles while a mentally unstable detective- Vincent Hanna pursues him without rest. Each man recognizes and respects the ability and the dedication of the other even though they are aware their cat-and-mouse game may end in violence.</overview><productioncompany>[Regency Enterprises, Forward Pass, Warner Bros.]</productioncompany><rating>7.7</rating><recordtype>movie</recordtype><revenue>187436818</revenue><runtime>170</runtime><status>Released</status><tagline>A Los Angeles Crime Saga</tagline><title>Heat</title><year>1995</year></Movie></ArrayOfMovie>";
     }
 
-    private List<Movie> CreateMovieList()
+    private static List<Movie> CreateMovieList()
     {
         return new List<Movie>()
         {

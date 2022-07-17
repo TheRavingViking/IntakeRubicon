@@ -1,7 +1,4 @@
-﻿using Polly.Retry;
-using System.Net;
-
-namespace CrimeMovies.Clients
+﻿namespace CrimeMovies.Clients
 {
     public class MovieApiClient : IMovieApiClient
     {

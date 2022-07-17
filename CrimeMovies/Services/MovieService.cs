@@ -1,8 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Xml.Linq;
-
-[assembly: InternalsVisibleTo("CrimeMovies.Tests")]
-namespace CrimeMovies.Services
+﻿namespace CrimeMovies.Services
 {
     internal class MovieService : IMovieService
     {
