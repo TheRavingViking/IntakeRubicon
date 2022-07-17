@@ -1,9 +1,8 @@
-﻿global using CrimeMovies.Client;
+﻿global using CrimeMovies.Clients;
 global using CrimeMovies.Interfaces;
 global using CrimeMovies.Models;
 global using CrimeMovies.Services;
 global using Microsoft.Extensions.Configuration;
-
 global using Microsoft.Extensions.DependencyInjection;
 global using Polly;
 global using System;
@@ -27,7 +26,7 @@ foreach (var group in groupedResults.OrderByDescending(x => x.year))
 {
     tableService.ShowTable(group.year, group.movies.Take(10).ToList());
 }
-Console.WriteLine("Retrieved all requested records");
+Console.WriteLine("Retrieved, Grouped and Ordered Records");
 Console.ReadKey();
 
 
@@ -37,7 +36,6 @@ Console.ReadKey();
         .AddJsonFile("appsettings.json", optional: false);
 
     IConfiguration config = builder.Build();
-
 
     var services = new ServiceCollection();
     services.AddHttpClient<IMovieApiClient, MovieApiClient>(client =>

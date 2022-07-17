@@ -1,16 +1,13 @@
 ﻿using Polly.Retry;
 using System.Net;
-using System.Text;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 
-namespace CrimeMovies.Client
+namespace CrimeMovies.Clients
 {
     public class MovieApiClient : IMovieApiClient
     {
         private readonly HttpClient _httpClient;
+        private readonly int maxRetries = 6;
         private AsyncRetryPolicy retryPolicy;
-        private int maxRetries = 6;
         public MovieApiClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -20,8 +17,7 @@ namespace CrimeMovies.Client
                 onRetry: (exception, sleepDuration, attemptNumber, context) =>
                 {
                     Console.WriteLine($"Too many requests. Retrying in {sleepDuration}. {attemptNumber} / {maxRetries}");
-                });
-                  
+                });  
         }
 
         /// <inheritdoc/>
@@ -29,7 +25,6 @@ namespace CrimeMovies.Client
         {
             return await retryPolicy.ExecuteAsync(async () =>
             {
-                Console.WriteLine($"requesting for {genre} and index {index}");
                 var response = await _httpClient.GetAsync($"api/movies/genres/{genre}?index={index}");
                 var httpResponse = response.EnsureSuccessStatusCode();
                 return await httpResponse.Content.ReadAsStringAsync();

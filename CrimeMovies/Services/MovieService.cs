@@ -1,9 +1,7 @@
-﻿using CrimeMovies.Interfaces;
-using CrimeMovies.Models;
-using System.Collections.Concurrent;
-using System.Linq;
+﻿using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
+[assembly: InternalsVisibleTo("CrimeMovies.Tests")]
 namespace CrimeMovies.Services
 {
     internal class MovieService : IMovieService
@@ -20,12 +18,12 @@ namespace CrimeMovies.Services
         {
             var amountOfRecordsPerRequest = 100;
 
-            if (amount < 100)
-            {
-                amount = 100;
-            }
-
             var amountOfRequestNeeded = amount / amountOfRecordsPerRequest;
+
+            if (amountOfRequestNeeded == 0)
+            {
+                amountOfRequestNeeded = 1;
+            }
 
             var TaskList = new List<Task<string>>();
 
@@ -33,7 +31,6 @@ namespace CrimeMovies.Services
             {
                 TaskList.Add(_movieApiClient.GetMoviesByGenre(genre, i*amountOfRecordsPerRequest));
             }
-
             // replace this with an different method to support Json
             return MapXmlResponsesToMovieList(await Task.WhenAll(TaskList));
         }

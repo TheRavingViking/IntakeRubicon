@@ -1,4 +1,4 @@
-﻿namespace CrimeMovies.Client
+﻿namespace CrimeMovies.Interfaces
 {
     public interface IMovieApiClient
     {

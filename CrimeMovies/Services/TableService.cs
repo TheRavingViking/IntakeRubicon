@@ -1,12 +1,4 @@
-﻿using CrimeMovies.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CrimeMovies.Services
+﻿namespace CrimeMovies.Services
 {
     /// <summary>
     /// TableService, used to creates a datatable to be logged to the console window
