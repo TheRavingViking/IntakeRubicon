@@ -54,13 +54,9 @@
             {
                 XDocument moviesResponse = XDocument.Parse(movieResponse);
                 XNamespace ns = "http://schemas.datacontract.org/2004/07/Rubicon.IntakeOpdracht.CosmosDb.Function.Models";
-                List<Movie> movies = (
-                from movie in moviesResponse.Descendants(ns + "Movie")
-                select MapXmlMovieToMovie(movie, ns)).ToList();
-
+                List<Movie> movies = moviesResponse.Descendants(ns + "Movie").Select(movie => MapXmlMovieToMovie(movie, ns)).ToList();
                 MovieList.AddRange(movies);
             }
-
             return MovieList;
         }
 
